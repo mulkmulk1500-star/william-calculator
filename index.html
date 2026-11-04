@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="생산준비">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f4f7fb">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="윌리엄 자일리톨 생산 준비용 간편 계산기">
+  <title>WILLIAM · 생산 준비 계산기</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --surface: rgba(255,255,255,.94);
+      --card: #ffffff;
+      --line: #e6ecf7;
+      --text: #182338;
+      --sub: #6c7a93;
+      --muted: #93a0b7;
+      --blue: #2f7cff;
+      --blue-deep: #1e64f0;
+      --blue-soft: #edf4ff;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      font-synthesis: none;
+      font-variant-numeric: tabular-nums;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); }
+    body {
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 360px 260px at 12% 10%, rgba(120,163,255,.18), transparent 74%),
+        radial-gradient(ellipse 320px 260px at 88% 84%, rgba(152,182,255,.12), transparent 76%),
+        var(--bg);
+      padding: 22px 16px;
+    }
+    button, input { font: inherit; }
+    button {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      border: 0;
+      background: none;
+    }
+    button:focus-visible, input:focus-visible {
+      outline: 3px solid rgba(74,138,255,.35);
+      outline-offset: 2px;
+    }
+    .app {
+      width: min(100%, 460px);
+      margin: 0 auto;
+      padding: 22px 20px 18px;
+      border-radius: 32px;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,.9);
+      box-shadow: 0 24px 54px rgba(21,40,86,.10), 0 6px 20px rgba(21,40,86,.05);
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+    }
+    .hero { margin-bottom: 14px; }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(28px, 7vw, 34px);
+      line-height: 1.08;
+      font-weight: 850;
+      letter-spacing: -.07em;
+      white-space: nowrap;
+    }
+    .hero h1 .accent { color: var(--blue); }
+    .hero p {
+      margin: 8px 0 0;
+      font-size: 13px;
+      line-height: 1.3;
+      color: var(--sub);
+      font-weight: 620;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+    .entry-card {
+      position: relative;
+      overflow: hidden;
+      padding: 16px 16px 14px;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #f8fbff 0%, #f2f6ff 64%, #eef4ff 100%);
+      border: 1px solid #e3ebfb;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.92);
+    }
+    .entry-card::before {
+      content: "";
+      position: absolute;
+      right: -92px;
+      top: -92px;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.9), rgba(171,201,255,.45) 42%, rgba(171,201,255,0) 75%);
+      pointer-events: none;
+    }
+    .input-head,
+    .entry-line,
+    .quick-controls,
+    .quick-scroll { position: relative; z-index: 1; }
+    .input-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .input-head label {
+      font-size: 13px;
+      font-weight: 780;
+      color: #4d6284;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+    .small-pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid #e1e9fa;
+      color: #6783ad;
+      font-size: 11px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+    .entry-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 4px 0 10px;
+      border-bottom: 1px solid #dbe4f4;
+    }
+    .entry-line input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      outline: none;
+      color: var(--text);
+      font-size: clamp(42px, 12vw, 58px);
+      line-height: 1.12;
+      font-weight: 840;
+      letter-spacing: -.08em;
+      caret-color: var(--blue);
+    }
+    .entry-line input::placeholder { color: #b7c3d7; }
+    .kg-suffix {
+      flex: none;
+      color: #6f88b1;
+      font-size: 20px;
+      font-weight: 760;
+      letter-spacing: -.03em;
+      white-space: nowrap;
+    }
+    .quick-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .quick-title {
+      flex: none;
+      font-size: 11px;
+      font-weight: 760;
+      color: var(--muted);
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+    .quick-scroll {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      flex: 1;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .quick-scroll::-webkit-scrollbar { display: none; }
+    .quick {
+      flex: none;
+      min-width: 52px;
+      min-height: 34px;
+      padding: 0 11px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.86);
+      border: 1px solid #dae4f6;
+      color: #4f6688;
+      font-size: 12px;
+      font-weight: 760;
+      box-shadow: 0 2px 6px rgba(46,84,153,.04);
+      transition: transform .18s cubic-bezier(.16,1.6,.32,1), background .18s, color .18s, border-color .18s;
+      white-space: nowrap;
+    }
+    .quick:hover { background: #fff; color: var(--blue-deep); border-color: #bfd2ff; }
+    .quick:active, .clear:active, .copy:active { transform: scale(.94); }
+    .clear {
+      flex: none;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: #8397b5;
+      background: rgba(255,255,255,.4);
+      transition: transform .18s cubic-bezier(.16,1.6,.32,1), background .18s, color .18s;
+    }
+    .clear:hover { background: rgba(232,239,252,.92); color: #386dd0; }
+    .clear svg { width: 17px; height: 17px; }
+    .error {
+      display: none;
+      margin: 8px 1px 0;
+      color: #b54259;
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .error.visible { display: block; }
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 16px 2px 10px;
+    }
+    .section-heading h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.1;
+      font-weight: 820;
+      letter-spacing: -.045em;
+      white-space: nowrap;
+    }
+    .live {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #7f8ca2;
+      font-size: 11px;
+      font-weight: 780;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .live::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #29c98b;
+      box-shadow: 0 0 0 3px rgba(41,201,139,.14);
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .metric-card {
+      min-width: 0;
+      padding: 14px 14px 13px;
+      border-radius: 22px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      min-height: 132px;
+      overflow: hidden;
+      position: relative;
+    }
+    .metric-card.blue {
+      color: #fff;
+      background: linear-gradient(148deg, #4a97ff -6%, #307af8 68%, #246af0 100%);
+      box-shadow: 0 10px 22px rgba(50,117,244,.14);
+    }
+    .metric-card.blue::before {
+      content: "";
+      position: absolute;
+      top: -78px;
+      right: -82px;
+      width: 152px;
+      height: 152px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.34), rgba(255,255,255,0) 72%);
+      pointer-events: none;
+    }
+    .metric-card.ice {
+      background: #f9fbff;
+      border: 1px solid #e7eef9;
+    }
+    .metric-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .metric-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .metric-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      flex: none;
+    }
+    .blue .metric-icon { background: rgba(255,255,255,.18); }
+    .ice .metric-icon { background: #eaf2ff; color: var(--blue); }
+    .metric-icon svg { width: 18px; height: 18px; }
+    .metric-name {
+      min-width: 0;
+      font-size: 12px;
+      font-weight: 760;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+    .blue .metric-name { color: rgba(255,255,255,.94); }
+    .ice .metric-name { color: #617390; }
+    .index {
+      flex: none;
+      font-size: 11px;
+      font-weight: 800;
+      opacity: .62;
+      white-space: nowrap;
+    }
+    .figure {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      line-height: 1;
+      flex-wrap: nowrap;
+      min-width: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .figure strong {
+      min-width: 0;
+      font-size: clamp(34px, 8vw, 42px);
+      font-weight: 850;
+      letter-spacing: -.07em;
+      white-space: nowrap;
+    }
+    .figure .unit {
+      font-size: 14px;
+      font-weight: 780;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+    .ice .figure .unit { color: #8a98af; }
+    .pallet-card {
+      position: relative;
+      overflow: hidden;
+      margin-top: 10px;
+      padding: 15px 16px;
+      border-radius: 24px;
+      color: #fff;
+      background: linear-gradient(130deg, #202b41 0%, #152033 76%, #1b2f4c 100%);
+      box-shadow: 0 10px 22px rgba(22,34,58,.14);
+    }
+    .pallet-card::after {
+      content: "";
+      position: absolute;
+      right: -118px;
+      top: -112px;
+      width: 205px;
+      height: 205px;
+      border-radius: 50%;
+      border: 38px solid rgba(116,153,221,.08);
+      pointer-events: none;
+    }
+    .pallet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .pallet-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .pallet-symbol {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(255,255,255,.1);
+      color: #abcfff;
+      flex: none;
+    }
+    .pallet-symbol svg { width: 20px; height: 20px; }
+    .pallet-title {
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -.035em;
+      white-space: nowrap;
+    }
+    .pallet-index {
+      color: #90a6c7;
+      font-size: 11px;
+      font-weight: 780;
+      letter-spacing: .03em;
+      white-space: nowrap;
+    }
+    .pallet-figures {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: minmax(0,1fr) 1px minmax(0,1fr);
+      gap: 12px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .pallet-divider {
+      width: 1px;
+      height: 52px;
+      background: rgba(215,226,248,.18);
+    }
+    .pallet-figure { min-width: 0; }
+    .pallet-figure .caption {
+      display: block;
+      margin-bottom: 4px;
+      color: #90a6c7;
+      font-size: 11px;
+      font-weight: 720;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+    .pallet-figure .number {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      line-height: 1;
+      flex-wrap: nowrap;
+      min-width: 0;
+    }
+    .pallet-figure strong {
+      min-width: 0;
+      font-size: clamp(34px, 8vw, 42px);
+      font-weight: 840;
+      letter-spacing: -.075em;
+      white-space: nowrap;
+    }
+    .pallet-figure .unit {
+      font-size: 14px;
+      font-weight: 770;
+      color: #9bb6de;
+      white-space: nowrap;
+    }
+    .pallet-figure.remaining strong { color: #aad8ff; }
+    .foot {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .copy {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 13px;
+      border-radius: 13px;
+      background: #f3f6fb;
+      border: 1px solid #e5ebf5;
+      color: #59677f;
+      font-size: 12px;
+      font-weight: 760;
+      transition: transform .18s cubic-bezier(.16,1.6,.32,1), background .18s;
+      white-space: nowrap;
+    }
+    .copy:hover { background: #eaf0fb; }
+    .copy svg { width: 14px; height: 14px; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: max(20px, env(safe-area-inset-bottom));
+      transform: translate(-50%, 12px) scale(.98);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20;
+      white-space: nowrap;
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: #172237;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 14px 34px rgba(21,36,66,.22);
+      transition: transform .24s cubic-bezier(.2,1,.25,1), opacity .22s;
+    }
+    .toast.visible { transform: translate(-50%,0) scale(1); opacity: 1; }
+    @keyframes pop {
+      0% { transform: translateY(2px) scale(.98); opacity: .82; }
+      65% { transform: translateY(-1px) scale(1.02); opacity: 1; }
+      100% { transform: translateY(0) scale(1); }
+    }
+    .figure.pop, .pallet-figure.pop { animation: pop .28s cubic-bezier(.2,1,.3,1); }
+    .install { margin-right: auto; background: #edf4ff; border-color: #dce9ff; color: #2366da; }
+    .install[hidden] { display: none; }
+    @media (max-width: 520px) {
+      body {
+        padding: 0;
+        background: #fff;
+      }
+      .app {
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        background: #fff;
+        padding: max(16px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+      }
+      .hero h1 { font-size: clamp(26px, 7.6vw, 32px); }
+    }
+    @media (max-width: 390px) {
+      .app { padding-inline: 14px; }
+      .metric-card { padding-inline: 12px; }
+      .pallet-card { padding-inline: 14px; }
+      .quick { min-width: 50px; padding-inline: 10px; }
+      .quick-title { font-size: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero" aria-label="계산기 소개">
+      <h1>생산 준비를 <span class="accent">한 번에</span></h1>
+      <p>필요량 · 포대 · 팔레트 구성을 바로 확인하세요.</p>
+    </section>
+
+    <section class="entry-card" aria-label="생산량 입력">
+      <div class="input-head">
+        <label for="kgInput">생산량 입력</label>
+        <span class="small-pill">kg 단위</span>
+      </div>
+      <div class="entry-line">
+        <input id="kgInput" aria-describedby="inputError" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" value="0" placeholder="0">
+        <span class="kg-suffix" aria-hidden="true">kg</span>
+      </div>
+      <div class="quick-controls" aria-label="빠른 추가">
+        <span class="quick-title">빠른 추가</span>
+        <div class="quick-scroll">
+          <button class="quick" type="button" data-preset="25">25</button>
+          <button class="quick" type="button" data-preset="50">50</button>
+          <button class="quick" type="button" data-preset="100">100</button>
+          <button class="quick" type="button" data-preset="200">200</button>
+          <button class="quick" type="button" data-preset="1000">1,000</button>
+        </div>
+        <button class="clear" type="button" id="clearBtn" aria-label="입력값 지우기" title="지우기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="error" id="inputError" role="status">0 이상의 숫자를 입력해 주세요.</p>
+    </section>
+
+    <section class="outcome" aria-label="계산 결과">
+      <div class="section-heading">
+        <h2>계산 결과</h2>
+        <span class="live">LIVE</span>
+      </div>
+      <div class="metrics-grid">
+        <article class="metric-card blue">
+          <div class="metric-top">
+            <div class="metric-label">
+              <div class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8.5" opacity=".6"/></svg></div>
+              <span class="metric-name">30% 필요량</span>
+            </div>
+            <span class="index">01</span>
+          </div>
+          <div class="figure" id="kgFigure"><strong id="resultKg">0</strong><span class="unit">kg</span></div>
+        </article>
+
+        <article class="metric-card ice">
+          <div class="metric-top">
+            <div class="metric-label">
+              <div class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8 8 4h8l2 4 1.4 11.2A2 2 0 0 1 17.4 21H6.6a2 2 0 0 1-2-1.8L6 8Z"/><path d="M6 8h12M9 13h6M12 10v6"/></svg></div>
+              <span class="metric-name">필요 포대</span>
+            </div>
+            <span class="index">02</span>
+          </div>
+          <div class="figure" id="bagFigure"><strong id="resultBags">0</strong><span class="unit">포대</span></div>
+        </article>
+      </div>
+
+      <article class="pallet-card">
+        <div class="pallet-head">
+          <div class="pallet-left">
+            <div class="pallet-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round"><path d="m12 2 8.5 4.7v9.4L12 21l-8.5-4.9V6.7L12 2Z"/><path d="M3.5 6.7 12 12l8.5-5.3M12 12v9M8 4.3l8.5 5"/></svg></div>
+            <span class="pallet-title">팔레트 구성</span>
+          </div>
+          <span class="pallet-index">03</span>
+        </div>
+        <div class="pallet-figures">
+          <div class="pallet-figure" id="palletFigure">
+            <span class="caption">완성 팔레트</span>
+            <div class="number"><strong id="resultPallets">0</strong><span class="unit">PL</span></div>
+          </div>
+          <div class="pallet-divider" aria-hidden="true"></div>
+          <div class="pallet-figure remaining" id="remainFigure">
+            <span class="caption">잔여 포대</span>
+            <div class="number"><strong id="resultRemainder">0</strong><span class="unit">포대</span></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <footer class="foot">
+      <button class="copy install" id="installBtn" type="button" hidden aria-label="홈 화면에 설치하기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 16v4h16v-4"/></svg>
+        앱 설치
+      </button>
+      <button class="copy" id="copyBtn" type="button" aria-label="계산 결과 복사">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+        결과 복사
+      </button>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+      const input = document.getElementById('kgInput');
+      const error = document.getElementById('inputError');
+      const toast = document.getElementById('toast');
+      const presets = [...document.querySelectorAll('[data-preset]')];
+      const clearBtn = document.getElementById('clearBtn');
+      const copyBtn = document.getElementById('copyBtn');
+      const storageKey = 'william-prep-calculator-v3';
+      const legacyKeys = ['william-prep-calculator-v2', 'mallang-calculator-kg-v1'];
+      const outputs = {
+        kg: document.getElementById('resultKg'),
+        bags: document.getElementById('resultBags'),
+        pallets: document.getElementById('resultPallets'),
+        remainder: document.getElementById('resultRemainder')
+      };
+      const figures = {
+        kg: document.getElementById('kgFigure'),
+        bags: document.getElementById('bagFigure'),
+        pallets: document.getElementById('palletFigure'),
+        remainder: document.getElementById('remainFigure')
+      };
+      const formatter = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 6 });
+      let current = null;
+      let firstRender = true;
+      let toastTimer;
+
+      function parseAmount(text) {
+        const cleaned = String(text).replace(/,/g, '').trim();
+        if (!cleaned) return null;
+        if (!/^(?:\d+\.?\d*|\.\d+)$/.test(cleaned)) return null;
+        const n = Number(cleaned);
+        return Number.isFinite(n) && n >= 0 && n <= 1e12 ? n : null;
+      }
+
+      function formatNumber(n) {
+        return formatter.format(n);
+      }
+
+      function calculate(kg) {
+        const requiredKg = kg * 0.3;
+        const bags = requiredKg / 25;
+        const totalBags = kg / 25;
+        const pallets = Math.floor(totalBags / 20);
+        const remainder = totalBags - pallets * 20;
+        return { kg: requiredKg, bags, pallets, remainder };
+      }
+
+      function popFigure(el) {
+        if (firstRender || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        el.classList.remove('pop');
+        void el.offsetWidth;
+        el.classList.add('pop');
+      }
+
+      function update() {
+        const kg = parseAmount(input.value);
+        current = kg;
+        const invalid = kg === null && input.value.trim() !== '';
+        error.classList.toggle('visible', invalid);
+        input.setAttribute('aria-invalid', String(invalid));
+
+        const result = kg === null ? null : calculate(kg);
+        Object.keys(outputs).forEach((key) => {
+          const next = result ? formatNumber(result[key]) : '—';
+          if (outputs[key].textContent !== next) {
+            outputs[key].textContent = next;
+            popFigure(figures[key]);
+          }
+        });
+
+        try { localStorage.setItem(storageKey, input.value); } catch (_) {}
+        firstRender = false;
+      }
+
+      function inform(message) {
+        toast.textContent = message;
+        toast.classList.add('visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('visible'), 1800);
+      }
+
+      function setFormattedValue(numberValue) {
+        input.value = formatNumber(numberValue);
+        update();
+      }
+
+      presets.forEach((button) => {
+        button.addEventListener('click', () => {
+          const add = Number(button.dataset.preset || 0);
+          const base = parseAmount(input.value) ?? 0;
+          setFormattedValue(base + add);
+        });
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        update();
+        input.focus();
+      });
+
+      input.addEventListener('input', update);
+      input.addEventListener('blur', () => {
+        const value = parseAmount(input.value);
+        if (value !== null) input.value = formatNumber(value);
+      });
+      input.addEventListener('focus', () => input.select());
+
+      copyBtn.addEventListener('click', async () => {
+        if (current === null) {
+          inform('먼저 생산량을 입력해 주세요.');
+          return;
+        }
+        const content = [
+          `생산량: ${formatNumber(current)} kg`,
+          `30% 필요량: ${outputs.kg.textContent} kg`,
+          `필요 포대: ${outputs.bags.textContent} 포대`,
+          `팔레트 구성: ${outputs.pallets.textContent} PL / 잔여 ${outputs.remainder.textContent} 포대`
+        ].join('\n');
+
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(content);
+          } else {
+            const textarea = document.createElement('textarea');
+            textarea.value = content;
+            textarea.setAttribute('readonly', '');
+            textarea.style.cssText = 'position:fixed;left:-9999px;top:0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            const copied = document.execCommand('copy');
+            textarea.remove();
+            if (!copied) throw new Error('copy failed');
+          }
+          inform('계산 결과를 복사했어요.');
+        } catch (_) {
+          inform('이 환경에서는 복사가 제한돼요.');
+        }
+      });
+
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved !== null) {
+          input.value = saved;
+        } else {
+          for (const key of legacyKeys) {
+            const legacy = localStorage.getItem(key);
+            if (legacy !== null) {
+              input.value = legacy;
+              break;
+            }
+          }
+        }
+      } catch (_) {}
+
+      update();
+
+      // PWA: Keep the calculator usable offline after the first HTTPS visit.
+      const secureHost = location.protocol === 'https:' ||
+        ['localhost', '127.0.0.1'].includes(location.hostname);
+      if ('serviceWorker' in navigator && secureHost) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(() => {});
+        });
+      }
+
+      const installBtn = document.getElementById('installBtn');
+      const standalone = window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true;
+      let installPrompt = null;
+      const isiOS = /iPad|iPhone|iPod/i.test(navigator.userAgent);
+      if (!standalone && isiOS && secureHost) installBtn.hidden = false;
+      window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        if (standalone) return;
+        installPrompt = event;
+        installBtn.hidden = false;
+      });
+      window.addEventListener('appinstalled', () => {
+        installPrompt = null;
+        installBtn.hidden = true;
+      });
+      installBtn.addEventListener('click', async () => {
+        if (installPrompt) {
+          const event = installPrompt;
+          installPrompt = null;
+          installBtn.hidden = true;
+          try { await event.prompt(); } catch (_) {}
+        } else if (isiOS) {
+          inform('Safari 공유 메뉴 → 홈 화면에 추가');
+        } else {
+          inform('브라우저 메뉴에서 앱 설치를 선택하세요.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
