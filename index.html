@@ -123,15 +123,37 @@
       letter-spacing: -.02em;
       white-space: nowrap;
     }
-    .small-pill {
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.82);
-      border: 1px solid #e1e9fa;
-      color: #6783ad;
-      font-size: 11px;
-      font-weight: 760;
+    .mix-toggle {
+      display: inline-flex;
+      flex: none;
+      align-items: center;
+      gap: 3px;
+      padding: 3px;
+      border: 1px solid #dce7fa;
+      border-radius: 13px;
+      background: rgba(226,235,251,.76);
+      box-shadow: inset 0 1px 2px rgba(42,76,132,.045);
+    }
+    .mix-choice {
+      min-width: 51px;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 790;
+      color: #788ba9;
       white-space: nowrap;
+      transition: background .18s, color .18s, transform .18s cubic-bezier(.2,1.5,.35,1), box-shadow .18s;
+    }
+    .mix-choice[aria-pressed="true"] {
+      background: #fff;
+      color: #266ef3;
+      box-shadow: 0 2px 7px rgba(45,82,144,.13);
+    }
+    .mix-choice:active { transform: scale(.94); }
+    @media (prefers-reduced-motion: reduce) {
+      .mix-choice { transition: none; }
     }
     .entry-line {
       display: flex;
@@ -554,7 +576,10 @@
     <section class="entry-card" aria-label="생산량 입력">
       <div class="input-head">
         <label for="kgInput">생산량 입력</label>
-        <span class="small-pill">kg 단위</span>
+        <div class="mix-toggle" role="group" aria-label="배합 비율 선택">
+          <button class="mix-choice" type="button" data-mix="20" aria-pressed="false">20%</button>
+          <button class="mix-choice" type="button" data-mix="30" aria-pressed="true">30%</button>
+        </div>
       </div>
       <div class="entry-line">
         <input id="kgInput" aria-describedby="inputError" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" value="0" placeholder="0">
@@ -586,7 +611,7 @@
           <div class="metric-top">
             <div class="metric-label">
               <div class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8.5" opacity=".6"/></svg></div>
-              <span class="metric-name">30% 필요량</span>
+              <span class="metric-name" id="mixResultLabel">30% 필요량</span>
             </div>
             <span class="index">01</span>
           </div>
@@ -648,6 +673,9 @@
       const error = document.getElementById('inputError');
       const toast = document.getElementById('toast');
       const presets = [...document.querySelectorAll('[data-preset]')];
+      const mixButtons = [...document.querySelectorAll('[data-mix]')];
+      const mixResultLabel = document.getElementById('mixResultLabel');
+      let mixPercent = 30;
       const clearBtn = document.getElementById('clearBtn');
       const copyBtn = document.getElementById('copyBtn');
       const storageKey = 'william-prep-calculator-v3';
@@ -681,8 +709,8 @@
         return formatter.format(n);
       }
 
-      function calculate(kg) {
-        const requiredKg = kg * 0.3;
+      function calculate(kg, percent) {
+        const requiredKg = kg * percent / 100;
         const bags = requiredKg / 25;
         const totalBags = kg / 25;
         const pallets = Math.floor(totalBags / 20);
@@ -704,7 +732,12 @@
         error.classList.toggle('visible', invalid);
         input.setAttribute('aria-invalid', String(invalid));
 
-        const result = kg === null ? null : calculate(kg);
+        mixResultLabel.textContent = `${mixPercent}% 필요량`;
+        mixButtons.forEach(button => {
+          button.setAttribute('aria-pressed', String(Number(button.dataset.mix) === mixPercent));
+        });
+
+        const result = kg === null ? null : calculate(kg, mixPercent);
         Object.keys(outputs).forEach((key) => {
           const next = result ? formatNumber(result[key]) : '—';
           if (outputs[key].textContent !== next) {
@@ -728,6 +761,15 @@
         input.value = formatNumber(numberValue);
         update();
       }
+
+      mixButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const next = Number(button.dataset.mix);
+          if (next !== 20 && next !== 30) return;
+          mixPercent = next;
+          update();
+        });
+      });
 
       presets.forEach((button) => {
         button.addEventListener('click', () => {
@@ -757,7 +799,7 @@
         }
         const content = [
           `생산량: ${formatNumber(current)} kg`,
-          `30% 필요량: ${outputs.kg.textContent} kg`,
+          `${mixPercent}% 필요량: ${outputs.kg.textContent} kg`,
           `필요 포대: ${outputs.bags.textContent} 포대`,
           `팔레트 구성: ${outputs.pallets.textContent} PL / 잔여 ${outputs.remainder.textContent} 포대`
         ].join('\n');
