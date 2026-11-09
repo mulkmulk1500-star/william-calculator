@@ -1,5 +1,5 @@
 /* 윌리엄 계산기: 최초 접속 후 오프라인 실행 지원 */
-const CACHE = 'william-prep-pwa-v6-20261110';
+const CACHE = 'william-prep-pwa-v7-20261110';
 const ASSETS = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png',
   './icons/maskable-icon-512.png', './icons/apple-touch-icon.png',
