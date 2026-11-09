@@ -66,7 +66,7 @@
       overflow: hidden;
       backdrop-filter: blur(20px);
     }
-    .hero { margin-bottom: 14px; }
+    .hero { margin-bottom: 12px; }
     .hero h1 {
       margin: 0;
       font-size: clamp(28px, 7vw, 34px);
@@ -253,7 +253,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      margin: 16px 2px 10px;
+      margin: 14px 2px 9px;
     }
     .section-heading h2 {
       margin: 0;
@@ -281,249 +281,116 @@
       background: #29c98b;
       box-shadow: 0 0 0 3px rgba(41,201,139,.14);
     }
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .metric-card {
+    /* All four results share one compact, legible row design. */
+    .result-list { display: grid; gap: 8px; }
+    .result-row {
       min-width: 0;
-      padding: 14px 14px 13px;
-      border-radius: 22px;
-      display: grid;
-      gap: 10px;
-      align-content: start;
-      min-height: 132px;
-      overflow: hidden;
-      position: relative;
-    }
-    .metric-card.blue {
-      color: #fff;
-      background: linear-gradient(148deg, #4a97ff -6%, #307af8 68%, #246af0 100%);
-      box-shadow: 0 10px 22px rgba(50,117,244,.14);
-    }
-    .metric-card.blue::before {
-      content: "";
-      position: absolute;
-      top: -78px;
-      right: -82px;
-      width: 152px;
-      height: 152px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.34), rgba(255,255,255,0) 72%);
-      pointer-events: none;
-    }
-    .metric-card.ice {
-      background: #f9fbff;
-      border: 1px solid #e7eef9;
-    }
-    .metric-top {
+      min-height: 69px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      position: relative;
-      z-index: 1;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1px solid #e6edf7;
+      border-radius: 19px;
+      background: #f9fbff;
     }
-    .metric-label {
+    .result-row.primary {
+      background: linear-gradient(120deg, #f1f7ff, #eaf3ff);
+      border-color: #dbe9ff;
+    }
+    .result-row.separate {
+      background: linear-gradient(118deg, #edf5ff, #e5f0ff);
+      border-color: #cedfff;
+    }
+    .result-meta {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
       min-width: 0;
+      flex: 0 0 auto;
     }
-    .metric-icon {
-      width: 34px;
-      height: 34px;
+    .result-index {
       display: grid;
       place-items: center;
-      border-radius: 12px;
       flex: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 11px;
+      background: #eaf1ff;
+      color: #4283e9;
+      font-size: 11px;
+      font-weight: 840;
+      letter-spacing: -.03em;
     }
-    .blue .metric-icon { background: rgba(255,255,255,.18); }
-    .ice .metric-icon { background: #eaf2ff; color: var(--blue); }
-    .metric-icon svg { width: 18px; height: 18px; }
-    .metric-name {
+    .primary .result-index, .separate .result-index {
+      color: #fff;
+      background: linear-gradient(150deg, #62a8ff, #307cf1);
+    }
+    .result-text { display: grid; gap: 3px; min-width: 0; }
+    .result-name {
+      color: #455a78;
+      font-size: 13px;
+      font-weight: 790;
+      letter-spacing: -.04em;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+    .primary .result-name { color: #235da8; }
+    .separate .result-name { color: #245998; }
+    .result-note {
+      color: #8a9bb4;
+      font-size: 10px;
+      font-weight: 670;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+    .result-value {
       min-width: 0;
+      display: flex;
+      flex: 0 1 auto;
+      align-items: baseline;
+      justify-content: flex-end;
+      gap: 4px;
+      line-height: 1.08;
+      color: #192a44;
+      white-space: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .result-value::-webkit-scrollbar { display: none; }
+    .result-value strong, .result-subvalue strong {
+      font-size: clamp(24px, 6.5vw, 29px);
+      font-weight: 850;
+      letter-spacing: -.065em;
+      white-space: nowrap;
+    }
+    .result-value .unit {
+      color: #8192ad;
       font-size: 12px;
       font-weight: 760;
       letter-spacing: -.02em;
       white-space: nowrap;
     }
-    .blue .metric-name { color: rgba(255,255,255,.94); }
-    .ice .metric-name { color: #617390; }
-    .index {
-      flex: none;
-      font-size: 11px;
-      font-weight: 800;
-      opacity: .62;
-      white-space: nowrap;
-    }
-    .figure {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      line-height: 1;
-      flex-wrap: nowrap;
-      min-width: 0;
-      position: relative;
-      z-index: 1;
-    }
-    .figure strong {
-      min-width: 0;
-      font-size: clamp(34px, 8vw, 42px);
-      font-weight: 850;
-      letter-spacing: -.07em;
-      white-space: nowrap;
-    }
-    .figure .unit {
-      font-size: 14px;
-      font-weight: 780;
-      letter-spacing: -.02em;
-      white-space: nowrap;
-    }
-    .ice .figure .unit { color: #8a98af; }
-    .pallet-card {
-      position: relative;
-      overflow: hidden;
-      margin-top: 10px;
-      padding: 15px 16px;
-      border-radius: 24px;
-      color: #fff;
-      background: linear-gradient(130deg, #202b41 0%, #152033 76%, #1b2f4c 100%);
-      box-shadow: 0 10px 22px rgba(22,34,58,.14);
-    }
-    .pallet-card::after {
-      content: "";
-      position: absolute;
-      right: -118px;
-      top: -112px;
-      width: 205px;
-      height: 205px;
-      border-radius: 50%;
-      border: 38px solid rgba(116,153,221,.08);
-      pointer-events: none;
-    }
-    .pallet-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      position: relative;
-      z-index: 1;
-    }
-    .pallet-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-    .pallet-symbol {
-      width: 36px;
-      height: 36px;
-      display: grid;
-      place-items: center;
-      border-radius: 12px;
-      background: rgba(255,255,255,.1);
-      color: #abcfff;
-      flex: none;
-    }
-    .pallet-symbol svg { width: 20px; height: 20px; }
-    .pallet-title {
-      min-width: 0;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: -.035em;
-      white-space: nowrap;
-    }
-    .pallet-index {
-      color: #90a6c7;
-      font-size: 11px;
-      font-weight: 780;
-      letter-spacing: .03em;
-      white-space: nowrap;
-    }
-    .pallet-figures {
-      margin-top: 12px;
-      display: grid;
-      grid-template-columns: minmax(0,1fr) 1px minmax(0,1fr);
-      gap: 12px;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-    }
-    .pallet-divider {
-      width: 1px;
-      height: 52px;
-      background: rgba(215,226,248,.18);
-    }
-    .pallet-figure { min-width: 0; }
-    .pallet-figure .caption {
-      display: block;
-      margin-bottom: 4px;
-      color: #90a6c7;
-      font-size: 11px;
-      font-weight: 720;
-      letter-spacing: -.02em;
-      white-space: nowrap;
-    }
-    .pallet-figure .number {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      line-height: 1;
-      flex-wrap: nowrap;
-      min-width: 0;
-    }
-    .pallet-figure strong {
-      min-width: 0;
-      font-size: clamp(34px, 8vw, 42px);
-      font-weight: 840;
-      letter-spacing: -.075em;
-      white-space: nowrap;
-    }
-    .pallet-figure .unit {
-      font-size: 14px;
-      font-weight: 770;
-      color: #9bb6de;
-      white-space: nowrap;
-    }
-    .pallet-figure.remaining strong { color: #aad8ff; }
-    .separate-card {
-      margin-top: 10px;
-      padding: 14px 16px;
-      border-radius: 22px;
-      background: linear-gradient(130deg, #f3f8ff, #eaf2ff);
-      border: 1px solid #dce8fb;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      min-width: 0;
-    }
-    .separate-info { display: grid; gap: 4px; min-width: 0; flex: none; }
-    .separate-title { color: #28486f; font-size: 14px; font-weight: 810; white-space: nowrap; letter-spacing: -.035em; }
-    .separate-caption { color: #7e91ab; font-size: 10px; font-weight: 710; white-space: nowrap; }
-    .separate-amount {
-      display: flex; align-items: baseline; justify-content: flex-end; gap: 4px;
-      min-width: 0; white-space: nowrap; overflow-x: auto; scrollbar-width: none;
-      color: #1e59b7; line-height: 1.12;
-    }
-    .separate-amount::-webkit-scrollbar { display: none; }
-    .separate-amount strong {
-      font-size: clamp(23px, 6.1vw, 29px); font-weight: 840; letter-spacing: -.065em; white-space: nowrap;
-    }
-    .separate-amount .unit { font-size: 12px; font-weight: 750; color: #6d87ad; white-space: nowrap; }
-    .separate-amount .plus { color: #9ab0ce; font-size: 17px; font-weight: 650; padding: 0 2px; }
-    @media (max-width: 375px) {
-      .separate-card { padding: 13px 12px; gap: 6px; }
-      .separate-title { font-size: 12px; }
-      .separate-caption { font-size: 9px; }
-      .separate-amount { gap: 3px; }
-      .separate-amount strong { font-size: 23px; }
-      .separate-amount .unit { font-size: 11px; }
+    .primary .result-value, .separate .result-value { color: #1b65c9; }
+    .pair strong, .pair .result-subvalue strong { font-size: clamp(22px, 5.9vw, 28px); }
+    .result-subvalue { display: inline-flex; align-items: baseline; gap: 4px; }
+    .result-plus { color: #a1b4cf; font-size: 17px; font-weight: 650; margin: 0 1px; }
+    .result-value.pop, .result-subvalue.pop { animation: pop .28s cubic-bezier(.2,1,.3,1); }
+    @media (max-width: 390px) {
+      .result-row { padding: 11px 12px; gap: 6px; }
+      .result-meta { gap: 7px; }
+      .result-index { width: 28px; height: 28px; border-radius: 9px; }
+      .result-name { font-size: 12px; }
+      .result-note { font-size: 9px; }
+      .result-value strong, .result-subvalue strong { font-size: 25px; }
+      .pair strong, .pair .result-subvalue strong { font-size: 21px; }
+      .result-value .unit { font-size: 11px; }
+      .result-value, .result-subvalue { gap: 3px; }
     }
     .foot {
-      margin-top: 12px;
+      margin-top: 10px;
       display: flex;
       justify-content: flex-end;
     }
@@ -590,8 +457,6 @@
     }
     @media (max-width: 390px) {
       .app { padding-inline: 14px; }
-      .metric-card { padding-inline: 12px; }
-      .pallet-card { padding-inline: 14px; }
       .quick { min-width: 50px; padding-inline: 10px; }
       .quick-title { font-size: 10px; }
     }
@@ -636,65 +501,46 @@
     </section>
 
     <section class="outcome" aria-label="계산 결과">
-      <div class="section-heading">
-        <h2>계산 결과</h2>
-        <span class="live">LIVE</span>
-      </div>
-      <div class="metrics-grid">
-        <article class="metric-card blue">
-          <div class="metric-top">
-            <div class="metric-label">
-              <div class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8.5" opacity=".6"/></svg></div>
-              <span class="metric-name" id="mixResultLabel">30% 필요량</span>
-            </div>
-            <span class="index">01</span>
+      <div class="section-heading"><h2>계산 결과</h2></div>
+      <div class="result-list">
+        <article class="result-row primary" aria-label="배합 필요량">
+          <div class="result-meta">
+            <span class="result-index" aria-hidden="true">01</span>
+            <span class="result-text"><span class="result-name" id="mixResultLabel">30% 필요량</span></span>
           </div>
-          <div class="figure" id="kgFigure"><strong id="resultKg">0</strong><span class="unit">kg</span></div>
+          <div class="result-value" id="kgFigure"><strong id="resultKg">0</strong><span class="unit">kg</span></div>
         </article>
-
-        <article class="metric-card ice">
-          <div class="metric-top">
-            <div class="metric-label">
-              <div class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8 8 4h8l2 4 1.4 11.2A2 2 0 0 1 17.4 21H6.6a2 2 0 0 1-2-1.8L6 8Z"/><path d="M6 8h12M9 13h6M12 10v6"/></svg></div>
-              <span class="metric-name">필요 포대</span>
-            </div>
-            <span class="index">02</span>
+        <article class="result-row" aria-label="배합 필요 포대">
+          <div class="result-meta">
+            <span class="result-index" aria-hidden="true">02</span>
+            <span class="result-text"><span class="result-name">필요 포대</span></span>
           </div>
-          <div class="figure" id="bagFigure"><strong id="resultBags">0</strong><span class="unit">포대</span></div>
+          <div class="result-value" id="bagFigure"><strong id="resultBags">0</strong><span class="unit">포대</span></div>
+        </article>
+        <article class="result-row" aria-label="전체 팔레트 구성">
+          <div class="result-meta">
+            <span class="result-index" aria-hidden="true">03</span>
+            <span class="result-text"><span class="result-name">팔레트 구성</span></span>
+          </div>
+          <div class="result-value pair" id="palletFigure">
+            <strong id="resultPallets">0</strong><span class="unit">PL</span><span class="result-plus" aria-hidden="true">+</span>
+            <span class="result-subvalue" id="remainFigure"><strong id="resultRemainder">0</strong><span class="unit">포대</span></span>
+          </div>
+        </article>
+        <article class="result-row separate" aria-label="배합용 포대를 제외한 별도 준비량">
+          <div class="result-meta">
+            <span class="result-index" aria-hidden="true">04</span>
+            <span class="result-text">
+              <span class="result-name">별도 준비량</span>
+              <span class="result-note">배합용 포대 제외</span>
+            </span>
+          </div>
+          <div class="result-value pair" id="separateFigure">
+            <strong id="resultSeparatePallets">0</strong><span class="unit">PL</span><span class="result-plus" aria-hidden="true">+</span>
+            <span class="result-subvalue"><strong id="resultSeparateBags">0</strong><span class="unit">포대</span></span>
+          </div>
         </article>
       </div>
-
-      <article class="pallet-card">
-        <div class="pallet-head">
-          <div class="pallet-left">
-            <div class="pallet-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round"><path d="m12 2 8.5 4.7v9.4L12 21l-8.5-4.9V6.7L12 2Z"/><path d="M3.5 6.7 12 12l8.5-5.3M12 12v9M8 4.3l8.5 5"/></svg></div>
-            <span class="pallet-title">팔레트 구성</span>
-          </div>
-          <span class="pallet-index">03</span>
-        </div>
-        <div class="pallet-figures">
-          <div class="pallet-figure" id="palletFigure">
-            <span class="caption">완성 팔레트</span>
-            <div class="number"><strong id="resultPallets">0</strong><span class="unit">PL</span></div>
-          </div>
-          <div class="pallet-divider" aria-hidden="true"></div>
-          <div class="pallet-figure remaining" id="remainFigure">
-            <span class="caption">잔여 포대</span>
-            <div class="number"><strong id="resultRemainder">0</strong><span class="unit">포대</span></div>
-          </div>
-        </div>
-      </article>
-      <article class="separate-card" aria-label="배합 제외 별도 준비량">
-        <div class="separate-info">
-          <span class="separate-title">별도 준비량</span>
-          <span class="separate-caption">배합용 포대 제외</span>
-        </div>
-        <div class="separate-amount" id="separateFigure" aria-live="polite">
-          <strong id="resultSeparatePallets">0</strong><span class="unit">PL</span>
-          <span class="plus" aria-hidden="true">+</span>
-          <strong id="resultSeparateBags">0</strong><span class="unit">포대</span>
-        </div>
-      </article>
     </section>
 
     <footer class="foot">
