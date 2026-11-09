@@ -488,6 +488,40 @@
       white-space: nowrap;
     }
     .pallet-figure.remaining strong { color: #aad8ff; }
+    .separate-card {
+      margin-top: 10px;
+      padding: 14px 16px;
+      border-radius: 22px;
+      background: linear-gradient(130deg, #f3f8ff, #eaf2ff);
+      border: 1px solid #dce8fb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+    .separate-info { display: grid; gap: 4px; min-width: 0; flex: none; }
+    .separate-title { color: #28486f; font-size: 14px; font-weight: 810; white-space: nowrap; letter-spacing: -.035em; }
+    .separate-caption { color: #7e91ab; font-size: 10px; font-weight: 710; white-space: nowrap; }
+    .separate-amount {
+      display: flex; align-items: baseline; justify-content: flex-end; gap: 4px;
+      min-width: 0; white-space: nowrap; overflow-x: auto; scrollbar-width: none;
+      color: #1e59b7; line-height: 1.12;
+    }
+    .separate-amount::-webkit-scrollbar { display: none; }
+    .separate-amount strong {
+      font-size: clamp(23px, 6.1vw, 29px); font-weight: 840; letter-spacing: -.065em; white-space: nowrap;
+    }
+    .separate-amount .unit { font-size: 12px; font-weight: 750; color: #6d87ad; white-space: nowrap; }
+    .separate-amount .plus { color: #9ab0ce; font-size: 17px; font-weight: 650; padding: 0 2px; }
+    @media (max-width: 375px) {
+      .separate-card { padding: 13px 12px; gap: 6px; }
+      .separate-title { font-size: 12px; }
+      .separate-caption { font-size: 9px; }
+      .separate-amount { gap: 3px; }
+      .separate-amount strong { font-size: 23px; }
+      .separate-amount .unit { font-size: 11px; }
+    }
     .foot {
       margin-top: 12px;
       display: flex;
@@ -650,6 +684,17 @@
           </div>
         </div>
       </article>
+      <article class="separate-card" aria-label="배합 제외 별도 준비량">
+        <div class="separate-info">
+          <span class="separate-title">별도 준비량</span>
+          <span class="separate-caption">배합용 포대 제외</span>
+        </div>
+        <div class="separate-amount" id="separateFigure" aria-live="polite">
+          <strong id="resultSeparatePallets">0</strong><span class="unit">PL</span>
+          <span class="plus" aria-hidden="true">+</span>
+          <strong id="resultSeparateBags">0</strong><span class="unit">포대</span>
+        </div>
+      </article>
     </section>
 
     <footer class="foot">
@@ -684,13 +729,17 @@
         kg: document.getElementById('resultKg'),
         bags: document.getElementById('resultBags'),
         pallets: document.getElementById('resultPallets'),
-        remainder: document.getElementById('resultRemainder')
+        remainder: document.getElementById('resultRemainder'),
+        separatePallets: document.getElementById('resultSeparatePallets'),
+        separateBags: document.getElementById('resultSeparateBags')
       };
       const figures = {
         kg: document.getElementById('kgFigure'),
         bags: document.getElementById('bagFigure'),
         pallets: document.getElementById('palletFigure'),
-        remainder: document.getElementById('remainFigure')
+        remainder: document.getElementById('remainFigure'),
+        separatePallets: document.getElementById('separateFigure'),
+        separateBags: document.getElementById('separateFigure')
       };
       const formatter = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 6 });
       let current = null;
@@ -715,7 +764,12 @@
         const totalBags = kg / 25;
         const pallets = Math.floor(totalBags / 20);
         const remainder = totalBags - pallets * 20;
-        return { kg: requiredKg, bags, pallets, remainder };
+        // Different preparation locations: separate the mixing bags from the total.
+        // Keep fractional bag quantities as calculated; do not round to whole bags.
+        const separateBagsTotal = Math.max(0, totalBags - bags);
+        const separatePallets = Math.floor(separateBagsTotal / 20);
+        const separateBags = Math.max(0, separateBagsTotal - separatePallets * 20);
+        return { kg: requiredKg, bags, pallets, remainder, separatePallets, separateBags };
       }
 
       function popFigure(el) {
@@ -801,7 +855,8 @@
           `생산량: ${formatNumber(current)} kg`,
           `${mixPercent}% 필요량: ${outputs.kg.textContent} kg`,
           `필요 포대: ${outputs.bags.textContent} 포대`,
-          `팔레트 구성: ${outputs.pallets.textContent} PL / 잔여 ${outputs.remainder.textContent} 포대`
+          `팔레트 구성: ${outputs.pallets.textContent} PL / 잔여 ${outputs.remainder.textContent} 포대`,
+          `별도 준비량(배합 제외): ${outputs.separatePallets.textContent} PL + ${outputs.separateBags.textContent} 포대`
         ].join('\n');
 
         try {
