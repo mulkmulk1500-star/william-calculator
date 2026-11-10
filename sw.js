@@ -1,5 +1,5 @@
 /* 윌리엄 계산기: 최초 접속 후 오프라인 실행 지원 */
-const CACHE = 'william-prep-pwa-v11-20261111';
+const CACHE = 'william-prep-pwa-v12-20261111';
 const ASSETS = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png',
   './icons/maskable-icon-512.png', './icons/apple-touch-icon.png',
@@ -18,7 +18,7 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   if (req.mode === 'navigate') {
-    event.respondWith(fetch(req).then(response => {
+    event.respondWith(fetch(req, { cache: 'no-store' }).then(response => {
       if (response.ok) {
         const copy = response.clone();
         caches.open(CACHE).then(cache => cache.put('./index.html', copy)).catch(() => {});
