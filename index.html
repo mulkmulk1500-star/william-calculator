@@ -359,6 +359,11 @@
       border-radius: 18px; background: #fbfcff;
     }
     .batch-heading { display: flex; align-items: center; gap: 9px; }
+    .batch-threshold-note {
+      margin-left: auto; color: #8798b1; font-size: 10px;
+      font-weight: 660; letter-spacing: -.02em; white-space: nowrap;
+    }
+    .batch-threshold-note:empty { display: none; }
     .batch-heading .result-index { background: #e6effe; color: #547eb7; }
     .batch-heading .result-name { font-size: 13px; }
     .batch-data { display: grid; margin-top: 9px; border-top: 1px solid #e8edf5; }
@@ -546,6 +551,7 @@
         <div class="batch-heading">
           <span class="result-index" aria-hidden="true">04</span>
           <span class="result-name">배합</span>
+          <span class="batch-threshold-note" id="batchThresholdNote"></span>
         </div>
         <div class="batch-data">
           <div class="batch-line">
@@ -583,6 +589,7 @@
       const presets = [...document.querySelectorAll('[data-preset]')];
       const mixButtons = [...document.querySelectorAll('[data-mix]')];
       const mixResultLabel = document.getElementById('mixResultLabel');
+      const batchThresholdNote = document.getElementById('batchThresholdNote');
       let mixPercent = 30;
       const clearBtn = document.getElementById('clearBtn');
       const copyBtn = document.getElementById('copyBtn');
@@ -634,9 +641,10 @@
         const separateBagsTotal = Math.max(0, totalBags - bags);
         const separatePallets = Math.floor(separateBagsTotal / 20);
         const separateBags = Math.max(0, separateBagsTotal - separatePallets * 20);
-        // The first 25kg bag was preloaded and 10kg remains inside the transfer pipe.
-        const batchKg = ((bags - 1) * 25) - 10;
-        const batchRemainderKg = kg - batchKg;
+        // Batch results apply only above 300 kg. One bag was preloaded and
+        // the pipe's 10 kg residual must be added to the calculation.
+        const batchKg = kg > 300 ? ((bags - 1) * 25) + 10 : null;
+        const batchRemainderKg = batchKg === null ? null : kg - batchKg;
         return { bags, pallets, remainder, separatePallets, separateBags, batchKg, batchRemainderKg };
       }
 
@@ -660,8 +668,9 @@
         });
 
         const result = kg === null ? null : calculate(kg, mixPercent);
+        batchThresholdNote.textContent = kg !== null && kg <= 300 ? '300kg 초과 시 계산' : '';
         Object.keys(outputs).forEach((key) => {
-          const next = result ? formatNumber(result[key]) : '—';
+          const next = result && result[key] !== null ? formatNumber(result[key]) : '—';
           if (outputs[key].textContent !== next) {
             outputs[key].textContent = next;
             popFigure(figures[key]);
