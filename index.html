@@ -281,19 +281,19 @@
       background: #29c98b;
       box-shadow: 0 0 0 3px rgba(41,201,139,.14);
     }
-    /* V8: consistent typography, compact rows, two-line pallet equivalents */
+    /* V9: compact, single-line results */
     .result-list { display: grid; gap: 8px; }
     .result-row {
       display: flex; align-items: center; justify-content: space-between;
-      gap: 10px; min-width: 0; min-height: 73px;
+      gap: 10px; min-width: 0; min-height: 66px;
       padding: 11px 14px; border: 1px solid #e6ecf5;
       border-radius: 18px; background: #fff;
     }
     .result-row.highlight {
-      min-height: 68px;
-      background: linear-gradient(135deg, #338cff, #1468ee);
-      border-color: #2679f4;
-      box-shadow: 0 5px 14px rgba(38,113,236,.12);
+      min-height: 66px;
+      background: #eff6ff;
+      border-color: #d5e6ff;
+      box-shadow: none;
     }
     .result-meta {
       display: flex; align-items: center; gap: 9px;
@@ -305,7 +305,7 @@
       background: #edf3fc; color: #6286bd;
       font-size: 11px; font-weight: 780; letter-spacing: -.02em;
     }
-    .highlight .result-index { background: rgba(255,255,255,.2); color: #fff; }
+    .highlight .result-index { background: #dceaff; color: #326bc5; }
     .result-text { display: grid; gap: 3px; min-width: 0; }
     .result-name {
       color: #31445f; font-size: 13px; font-weight: 780;
@@ -315,15 +315,15 @@
       color: #91a0b5; font-size: 10px; font-weight: 620;
       line-height: 1.2; white-space: nowrap;
     }
-    .highlight .result-name { color: #fff; }
-    .highlight .result-note { color: rgba(255,255,255,.77); }
+    .highlight .result-name { color: #2b527e; }
+    .highlight .result-note { color: #748fb1; }
     .result-values {
       min-width: 0; flex: 0 1 auto;
-      display: grid; gap: 5px; justify-items: end;
+      display: flex; align-items: center; justify-content: flex-end;
       overflow-x: auto; scrollbar-width: none;
     }
     .result-values::-webkit-scrollbar { display: none; }
-    .result-value, .result-secondary {
+    .result-value {
       display: flex; align-items: baseline; justify-content: flex-end;
       min-width: 0; line-height: 1.05; white-space: nowrap;
     }
@@ -336,20 +336,11 @@
       font-size: 13px; font-weight: 670; color: #7c8ca3;
       white-space: nowrap;
     }
-    .result-secondary { gap: 3px; color: #657994; }
-    .result-secondary strong {
-      font-size: 15px; font-weight: 740; letter-spacing: -.025em;
-      white-space: nowrap;
-    }
-    .result-secondary .unit {
-      font-size: 12px; font-weight: 630; color: #8c9cb1;
-      white-space: nowrap;
-    }
     .result-plus { font-size: 13px; font-weight: 600; color: #a1adc0; padding: 0 1px; }
     .result-subvalue { display: inline-flex; align-items: baseline; gap: 4px; }
-    .highlight .result-value, .highlight .result-value .unit { color: #fff; }
-    .highlight .result-value strong { font-weight: 830; }
-    .result-value.pop, .result-secondary.pop, .result-subvalue.pop {
+    .highlight .result-value { color: #1d62ba; }
+    .highlight .result-value .unit { color: #5e80a9; }
+    .result-value.pop, .result-subvalue.pop {
       animation: pop .28s cubic-bezier(.2,1,.3,1);
     }
     @media (max-width: 390px) {
@@ -360,8 +351,6 @@
       .result-note { font-size: 9px; }
       .result-value strong { font-size: 24px; }
       .result-value .unit { font-size: 12px; }
-      .result-secondary strong { font-size: 14px; }
-      .result-secondary .unit { font-size: 11px; }
       .result-value, .result-subvalue { gap: 3px; }
     }
     .foot {
@@ -489,11 +478,6 @@
               <span class="result-plus" aria-hidden="true">+</span>
               <span class="result-subvalue" id="remainFigure"><strong id="resultRemainder">0</strong><span class="unit">포대</span></span>
             </div>
-            <div class="result-secondary" id="palletTiersFigure" aria-label="팔레트와 단 단위">
-              <strong id="resultPalletsTier">0</strong><span class="unit">PL</span>
-              <span class="result-plus" aria-hidden="true">+</span>
-              <strong id="resultPalletTiers">0</strong><span class="unit">단</span>
-            </div>
           </div>
         </article>
         <article class="result-row" aria-label="배합용 포대를 제외한 별도 준비량">
@@ -509,11 +493,6 @@
               <strong id="resultSeparatePallets">0</strong><span class="unit">PL</span>
               <span class="result-plus" aria-hidden="true">+</span>
               <span class="result-subvalue" id="separateBagFigure"><strong id="resultSeparateBags">0</strong><span class="unit">포대</span></span>
-            </div>
-            <div class="result-secondary" id="separateTiersFigure" aria-label="별도 준비량의 팔레트와 단 단위">
-              <strong id="resultSeparatePalletsTier">0</strong><span class="unit">PL</span>
-              <span class="result-plus" aria-hidden="true">+</span>
-              <strong id="resultSeparateTiers">0</strong><span class="unit">단</span>
             </div>
           </div>
         </article>
@@ -564,23 +543,15 @@
         bags: document.getElementById('resultBags'),
         pallets: document.getElementById('resultPallets'),
         remainder: document.getElementById('resultRemainder'),
-        palletTiers: document.getElementById('resultPalletTiers'),
-        palletsTier: document.getElementById('resultPalletsTier'),
         separatePallets: document.getElementById('resultSeparatePallets'),
-        separateBags: document.getElementById('resultSeparateBags'),
-        separateTiers: document.getElementById('resultSeparateTiers'),
-        separatePalletsTier: document.getElementById('resultSeparatePalletsTier')
+        separateBags: document.getElementById('resultSeparateBags')
       };
       const figures = {
         bags: document.getElementById('bagFigure'),
         pallets: document.getElementById('palletFigure'),
         remainder: document.getElementById('remainFigure'),
-        palletTiers: document.getElementById('palletTiersFigure'),
-        palletsTier: document.getElementById('palletTiersFigure'),
         separatePallets: document.getElementById('separateFigure'),
-        separateBags: document.getElementById('separateBagFigure'),
-        separateTiers: document.getElementById('separateTiersFigure'),
-        separatePalletsTier: document.getElementById('separateTiersFigure')
+        separateBags: document.getElementById('separateBagFigure')
       };
       const formatter = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 6 });
       let current = null;
@@ -610,14 +581,7 @@
         const separateBagsTotal = Math.max(0, totalBags - bags);
         const separatePallets = Math.floor(separateBagsTotal / 20);
         const separateBags = Math.max(0, separateBagsTotal - separatePallets * 20);
-        return {
-          bags, pallets, remainder,
-          palletTiers: remainder / 4,
-          palletsTier: pallets,
-          separatePallets, separateBags,
-          separateTiers: separateBags / 4,
-          separatePalletsTier: separatePallets
-        };
+        return { bags, pallets, remainder, separatePallets, separateBags };
       }
 
       function popFigure(el) {
@@ -701,8 +665,8 @@
         }
         const content = [
           `생산량: ${formatNumber(current)} kg`,
-          `팔레트 구성: ${outputs.pallets.textContent} PL + ${outputs.remainder.textContent} 포대 ( ${outputs.palletsTier.textContent} PL + ${outputs.palletTiers.textContent} 단 )`,
-          `별도 준비량(배합 제외): ${outputs.separatePallets.textContent} PL + ${outputs.separateBags.textContent} 포대 ( ${outputs.separatePalletsTier.textContent} PL + ${outputs.separateTiers.textContent} 단 )`,
+          `팔레트 구성: ${outputs.pallets.textContent} PL + ${outputs.remainder.textContent} 포대`,
+          `별도 준비량(배합 제외): ${outputs.separatePallets.textContent} PL + ${outputs.separateBags.textContent} 포대`,
           `${mixPercent}% 배합 필요 포대: ${outputs.bags.textContent} 포대`
         ].join('\n');
 
