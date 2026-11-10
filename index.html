@@ -641,9 +641,9 @@
         const separateBagsTotal = Math.max(0, totalBags - bags);
         const separatePallets = Math.floor(separateBagsTotal / 20);
         const separateBags = Math.max(0, separateBagsTotal - separatePallets * 20);
-        // Batch results apply only above 300 kg. One bag was preloaded and
+        // Batch results apply only through 300 kg. One bag was preloaded and
         // the pipe's 10 kg residual must be added to the calculation.
-        const batchKg = kg > 300 ? ((bags - 1) * 25) + 10 : null;
+        const batchKg = kg <= 300 ? ((bags - 1) * 25) + 10 : null;
         const batchRemainderKg = batchKg === null ? null : kg - batchKg;
         return { bags, pallets, remainder, separatePallets, separateBags, batchKg, batchRemainderKg };
       }
@@ -668,7 +668,7 @@
         });
 
         const result = kg === null ? null : calculate(kg, mixPercent);
-        batchThresholdNote.textContent = kg !== null && kg <= 300 ? '300kg 초과 시 계산' : '';
+        batchThresholdNote.textContent = kg !== null && kg > 300 ? '300kg 이하에서만 계산' : '';
         Object.keys(outputs).forEach((key) => {
           const next = result && result[key] !== null ? formatNumber(result[key]) : '—';
           if (outputs[key].textContent !== next) {
