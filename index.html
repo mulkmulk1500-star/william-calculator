@@ -281,112 +281,87 @@
       background: #29c98b;
       box-shadow: 0 0 0 3px rgba(41,201,139,.14);
     }
-    /* All four results share one compact, legible row design. */
+    /* V8: consistent typography, compact rows, two-line pallet equivalents */
     .result-list { display: grid; gap: 8px; }
     .result-row {
-      min-width: 0;
-      min-height: 69px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 12px 14px;
-      border: 1px solid #e6edf7;
-      border-radius: 19px;
-      background: #f9fbff;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; min-width: 0; min-height: 73px;
+      padding: 11px 14px; border: 1px solid #e6ecf5;
+      border-radius: 18px; background: #fff;
     }
-    .result-row.primary {
-      background: linear-gradient(120deg, #f1f7ff, #eaf3ff);
-      border-color: #dbe9ff;
-    }
-    .result-row.separate {
-      background: linear-gradient(118deg, #edf5ff, #e5f0ff);
-      border-color: #cedfff;
+    .result-row.highlight {
+      min-height: 68px;
+      background: linear-gradient(135deg, #338cff, #1468ee);
+      border-color: #2679f4;
+      box-shadow: 0 5px 14px rgba(38,113,236,.12);
     }
     .result-meta {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      min-width: 0;
-      flex: 0 0 auto;
+      display: flex; align-items: center; gap: 9px;
+      flex: 0 0 auto; min-width: 0;
     }
     .result-index {
-      display: grid;
-      place-items: center;
-      flex: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 11px;
-      background: #eaf1ff;
-      color: #4283e9;
-      font-size: 11px;
-      font-weight: 840;
-      letter-spacing: -.03em;
+      display: grid; place-items: center; flex: none;
+      width: 31px; height: 31px; border-radius: 10px;
+      background: #edf3fc; color: #6286bd;
+      font-size: 11px; font-weight: 780; letter-spacing: -.02em;
     }
-    .primary .result-index, .separate .result-index {
-      color: #fff;
-      background: linear-gradient(150deg, #62a8ff, #307cf1);
-    }
+    .highlight .result-index { background: rgba(255,255,255,.2); color: #fff; }
     .result-text { display: grid; gap: 3px; min-width: 0; }
     .result-name {
-      color: #455a78;
-      font-size: 13px;
-      font-weight: 790;
-      letter-spacing: -.04em;
-      line-height: 1.15;
-      white-space: nowrap;
+      color: #31445f; font-size: 13px; font-weight: 780;
+      line-height: 1.2; letter-spacing: -.025em; white-space: nowrap;
     }
-    .primary .result-name { color: #235da8; }
-    .separate .result-name { color: #245998; }
     .result-note {
-      color: #8a9bb4;
-      font-size: 10px;
-      font-weight: 670;
-      line-height: 1.1;
-      letter-spacing: -.02em;
-      white-space: nowrap;
+      color: #91a0b5; font-size: 10px; font-weight: 620;
+      line-height: 1.2; white-space: nowrap;
     }
-    .result-value {
-      min-width: 0;
-      display: flex;
-      flex: 0 1 auto;
-      align-items: baseline;
-      justify-content: flex-end;
-      gap: 4px;
-      line-height: 1.08;
-      color: #192a44;
-      white-space: nowrap;
-      overflow-x: auto;
-      scrollbar-width: none;
+    .highlight .result-name { color: #fff; }
+    .highlight .result-note { color: rgba(255,255,255,.77); }
+    .result-values {
+      min-width: 0; flex: 0 1 auto;
+      display: grid; gap: 5px; justify-items: end;
+      overflow-x: auto; scrollbar-width: none;
     }
-    .result-value::-webkit-scrollbar { display: none; }
-    .result-value strong, .result-subvalue strong {
-      font-size: clamp(24px, 6.5vw, 29px);
-      font-weight: 850;
-      letter-spacing: -.065em;
+    .result-values::-webkit-scrollbar { display: none; }
+    .result-value, .result-secondary {
+      display: flex; align-items: baseline; justify-content: flex-end;
+      min-width: 0; line-height: 1.05; white-space: nowrap;
+    }
+    .result-value { gap: 4px; color: #192b43; }
+    .result-value strong {
+      font-size: 27px; font-weight: 830; letter-spacing: -.05em;
       white-space: nowrap;
     }
     .result-value .unit {
-      color: #8192ad;
-      font-size: 12px;
-      font-weight: 760;
-      letter-spacing: -.02em;
+      font-size: 13px; font-weight: 670; color: #7c8ca3;
       white-space: nowrap;
     }
-    .primary .result-value, .separate .result-value { color: #1b65c9; }
-    .pair strong, .pair .result-subvalue strong { font-size: clamp(22px, 5.9vw, 28px); }
+    .result-secondary { gap: 3px; color: #657994; }
+    .result-secondary strong {
+      font-size: 15px; font-weight: 740; letter-spacing: -.025em;
+      white-space: nowrap;
+    }
+    .result-secondary .unit {
+      font-size: 12px; font-weight: 630; color: #8c9cb1;
+      white-space: nowrap;
+    }
+    .result-plus { font-size: 13px; font-weight: 600; color: #a1adc0; padding: 0 1px; }
     .result-subvalue { display: inline-flex; align-items: baseline; gap: 4px; }
-    .result-plus { color: #a1b4cf; font-size: 17px; font-weight: 650; margin: 0 1px; }
-    .result-value.pop, .result-subvalue.pop { animation: pop .28s cubic-bezier(.2,1,.3,1); }
+    .highlight .result-value, .highlight .result-value .unit { color: #fff; }
+    .highlight .result-value strong { font-weight: 830; }
+    .result-value.pop, .result-secondary.pop, .result-subvalue.pop {
+      animation: pop .28s cubic-bezier(.2,1,.3,1);
+    }
     @media (max-width: 390px) {
-      .result-row { padding: 11px 12px; gap: 6px; }
+      .result-row { padding: 10px 11px; gap: 6px; }
       .result-meta { gap: 7px; }
       .result-index { width: 28px; height: 28px; border-radius: 9px; }
       .result-name { font-size: 12px; }
       .result-note { font-size: 9px; }
-      .result-value strong, .result-subvalue strong { font-size: 25px; }
-      .pair strong, .pair .result-subvalue strong { font-size: 21px; }
-      .result-value .unit { font-size: 11px; }
+      .result-value strong { font-size: 24px; }
+      .result-value .unit { font-size: 12px; }
+      .result-secondary strong { font-size: 14px; }
+      .result-secondary .unit { font-size: 11px; }
       .result-value, .result-subvalue { gap: 3px; }
     }
     .foot {
@@ -503,41 +478,55 @@
     <section class="outcome" aria-label="계산 결과">
       <div class="section-heading"><h2>계산 결과</h2></div>
       <div class="result-list">
-        <article class="result-row primary" aria-label="배합 필요량">
-          <div class="result-meta">
-            <span class="result-index" aria-hidden="true">01</span>
-            <span class="result-text"><span class="result-name" id="mixResultLabel">30% 필요량</span></span>
-          </div>
-          <div class="result-value" id="kgFigure"><strong id="resultKg">0</strong><span class="unit">kg</span></div>
-        </article>
-        <article class="result-row" aria-label="배합 필요 포대">
-          <div class="result-meta">
-            <span class="result-index" aria-hidden="true">02</span>
-            <span class="result-text"><span class="result-name">필요 포대</span></span>
-          </div>
-          <div class="result-value" id="bagFigure"><strong id="resultBags">0</strong><span class="unit">포대</span></div>
-        </article>
         <article class="result-row" aria-label="전체 팔레트 구성">
           <div class="result-meta">
-            <span class="result-index" aria-hidden="true">03</span>
+            <span class="result-index" aria-hidden="true">01</span>
             <span class="result-text"><span class="result-name">팔레트 구성</span></span>
           </div>
-          <div class="result-value pair" id="palletFigure">
-            <strong id="resultPallets">0</strong><span class="unit">PL</span><span class="result-plus" aria-hidden="true">+</span>
-            <span class="result-subvalue" id="remainFigure"><strong id="resultRemainder">0</strong><span class="unit">포대</span></span>
+          <div class="result-values">
+            <div class="result-value" id="palletFigure">
+              <strong id="resultPallets">0</strong><span class="unit">PL</span>
+              <span class="result-plus" aria-hidden="true">+</span>
+              <span class="result-subvalue" id="remainFigure"><strong id="resultRemainder">0</strong><span class="unit">포대</span></span>
+            </div>
+            <div class="result-secondary" id="palletTiersFigure" aria-label="팔레트와 단 단위">
+              <strong id="resultPalletsTier">0</strong><span class="unit">PL</span>
+              <span class="result-plus" aria-hidden="true">+</span>
+              <strong id="resultPalletTiers">0</strong><span class="unit">단</span>
+            </div>
           </div>
         </article>
-        <article class="result-row separate" aria-label="배합용 포대를 제외한 별도 준비량">
+        <article class="result-row" aria-label="배합용 포대를 제외한 별도 준비량">
           <div class="result-meta">
-            <span class="result-index" aria-hidden="true">04</span>
+            <span class="result-index" aria-hidden="true">02</span>
             <span class="result-text">
               <span class="result-name">별도 준비량</span>
-              <span class="result-note">배합용 포대 제외</span>
+              <span class="result-note">배합용 제외 · 투입구</span>
             </span>
           </div>
-          <div class="result-value pair" id="separateFigure">
-            <strong id="resultSeparatePallets">0</strong><span class="unit">PL</span><span class="result-plus" aria-hidden="true">+</span>
-            <span class="result-subvalue"><strong id="resultSeparateBags">0</strong><span class="unit">포대</span></span>
+          <div class="result-values">
+            <div class="result-value" id="separateFigure">
+              <strong id="resultSeparatePallets">0</strong><span class="unit">PL</span>
+              <span class="result-plus" aria-hidden="true">+</span>
+              <span class="result-subvalue" id="separateBagFigure"><strong id="resultSeparateBags">0</strong><span class="unit">포대</span></span>
+            </div>
+            <div class="result-secondary" id="separateTiersFigure" aria-label="별도 준비량의 팔레트와 단 단위">
+              <strong id="resultSeparatePalletsTier">0</strong><span class="unit">PL</span>
+              <span class="result-plus" aria-hidden="true">+</span>
+              <strong id="resultSeparateTiers">0</strong><span class="unit">단</span>
+            </div>
+          </div>
+        </article>
+        <article class="result-row highlight" aria-label="배합 필요 포대">
+          <div class="result-meta">
+            <span class="result-index" aria-hidden="true">03</span>
+            <span class="result-text">
+              <span class="result-name">배합 필요 포대</span>
+              <span class="result-note" id="mixResultLabel">30% 배합</span>
+            </span>
+          </div>
+          <div class="result-value" id="bagFigure">
+            <strong id="resultBags">0</strong><span class="unit">포대</span>
           </div>
         </article>
       </div>
@@ -572,20 +561,26 @@
       const storageKey = 'william-prep-calculator-v3';
       const legacyKeys = ['william-prep-calculator-v2', 'mallang-calculator-kg-v1'];
       const outputs = {
-        kg: document.getElementById('resultKg'),
         bags: document.getElementById('resultBags'),
         pallets: document.getElementById('resultPallets'),
         remainder: document.getElementById('resultRemainder'),
+        palletTiers: document.getElementById('resultPalletTiers'),
+        palletsTier: document.getElementById('resultPalletsTier'),
         separatePallets: document.getElementById('resultSeparatePallets'),
-        separateBags: document.getElementById('resultSeparateBags')
+        separateBags: document.getElementById('resultSeparateBags'),
+        separateTiers: document.getElementById('resultSeparateTiers'),
+        separatePalletsTier: document.getElementById('resultSeparatePalletsTier')
       };
       const figures = {
-        kg: document.getElementById('kgFigure'),
         bags: document.getElementById('bagFigure'),
         pallets: document.getElementById('palletFigure'),
         remainder: document.getElementById('remainFigure'),
+        palletTiers: document.getElementById('palletTiersFigure'),
+        palletsTier: document.getElementById('palletTiersFigure'),
         separatePallets: document.getElementById('separateFigure'),
-        separateBags: document.getElementById('separateFigure')
+        separateBags: document.getElementById('separateBagFigure'),
+        separateTiers: document.getElementById('separateTiersFigure'),
+        separatePalletsTier: document.getElementById('separateTiersFigure')
       };
       const formatter = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 6 });
       let current = null;
@@ -615,7 +610,14 @@
         const separateBagsTotal = Math.max(0, totalBags - bags);
         const separatePallets = Math.floor(separateBagsTotal / 20);
         const separateBags = Math.max(0, separateBagsTotal - separatePallets * 20);
-        return { kg: requiredKg, bags, pallets, remainder, separatePallets, separateBags };
+        return {
+          bags, pallets, remainder,
+          palletTiers: remainder / 4,
+          palletsTier: pallets,
+          separatePallets, separateBags,
+          separateTiers: separateBags / 4,
+          separatePalletsTier: separatePallets
+        };
       }
 
       function popFigure(el) {
@@ -632,7 +634,7 @@
         error.classList.toggle('visible', invalid);
         input.setAttribute('aria-invalid', String(invalid));
 
-        mixResultLabel.textContent = `${mixPercent}% 필요량`;
+        mixResultLabel.textContent = `${mixPercent}% 배합`;
         mixButtons.forEach(button => {
           button.setAttribute('aria-pressed', String(Number(button.dataset.mix) === mixPercent));
         });
@@ -699,10 +701,9 @@
         }
         const content = [
           `생산량: ${formatNumber(current)} kg`,
-          `${mixPercent}% 필요량: ${outputs.kg.textContent} kg`,
-          `필요 포대: ${outputs.bags.textContent} 포대`,
-          `팔레트 구성: ${outputs.pallets.textContent} PL / 잔여 ${outputs.remainder.textContent} 포대`,
-          `별도 준비량(배합 제외): ${outputs.separatePallets.textContent} PL + ${outputs.separateBags.textContent} 포대`
+          `팔레트 구성: ${outputs.pallets.textContent} PL + ${outputs.remainder.textContent} 포대 ( ${outputs.palletsTier.textContent} PL + ${outputs.palletTiers.textContent} 단 )`,
+          `별도 준비량(배합 제외): ${outputs.separatePallets.textContent} PL + ${outputs.separateBags.textContent} 포대 ( ${outputs.separatePalletsTier.textContent} PL + ${outputs.separateTiers.textContent} 단 )`,
+          `${mixPercent}% 배합 필요 포대: ${outputs.bags.textContent} 포대`
         ].join('\n');
 
         try {
