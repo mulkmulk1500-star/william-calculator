@@ -413,6 +413,49 @@
     }
     .copy:hover { background: #eaf0fb; }
     .copy svg { width: 14px; height: 14px; }
+
+    /* A very small bottom-of-screen weekly duty rota. Editor stays collapsed. */
+    .duty-footer {
+      margin-top: 19px;
+      padding-top: 13px;
+      border-top: 1px solid #edf1f7;
+      color: #73819a;
+    }
+    .duty-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin-bottom: 7px;
+    }
+    .duty-title { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+    .duty-title strong { color: #586b87; font-size: 11px; font-weight: 760; letter-spacing: -.02em; }
+    .duty-period { color: #a0adbf; font-size: 10px; font-weight: 600; white-space: nowrap; }
+    .duty-edit-toggle { color: #8394af; font-size: 10px; font-weight: 700; border-radius: 7px; padding: 5px 7px; }
+    .duty-edit-toggle:hover, .duty-edit-toggle[aria-expanded="true"] { background: #eff4fc; color: #416aab; }
+    .duty-schedule { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+    .duty-week { display: grid; gap: 4px; padding: 9px 10px; border-radius: 12px; background: #f7f9fd; min-width: 0; }
+    .duty-week.current { background: #f0f5ff; }
+    .duty-week-label { color: #96a4bb; font-size: 10px; font-weight: 710; }
+    .duty-week.current .duty-week-label { color: #708fbf; }
+    .duty-person { color: #4a5e7a; font-size: 12px; font-weight: 750; line-height: 1.35; letter-spacing: -.025em; white-space: normal; word-break: keep-all; overflow-wrap: anywhere; }
+    .duty-week.current .duty-person { color: #315e9a; }
+    .duty-editor {
+      margin-top: 10px; padding: 12px; background: #fafcff;
+      border: 1px solid #e6edf7; border-radius: 13px;
+    }
+    .duty-editor[hidden] { display: none; }
+    .duty-editor-help { margin: 0 0 10px; font-size: 11px; color: #7f90ac; line-height: 1.5; }
+    .duty-team-fields { display: grid; gap: 6px; }
+    .duty-team-row { display: grid; grid-template-columns: 29px minmax(0,1fr); align-items: center; gap: 7px; }
+    .duty-team-row label { font-size: 10px; font-weight: 720; color: #8293ad; }
+    .duty-team-row input, .duty-current-select {
+      width: 100%; min-width: 0; padding: 8px 9px; border: 1px solid #dce5f4;
+      border-radius: 9px; background: #fff; color: #334b6c; font-size: 12px; font-weight: 660;
+    }
+    .duty-current-group { display: grid; gap: 5px; margin-top: 11px; }
+    .duty-current-group label { color: #687c9b; font-size: 11px; font-weight: 730; }
+    .duty-editor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+    .duty-action { min-height: 34px; padding: 0 12px; border-radius: 9px; background: #e9f1ff; color: #306ac6; font-size: 11px; font-weight: 760; }
+    .duty-action.secondary { background: #f0f2f6; color: #7788a0; }
+    .duty-local-note { display: block; color: #9ca9bb; font-size: 10px; line-height: 1.45; margin-top: 9px; }
     .toast {
       position: fixed;
       left: 50%;
@@ -576,6 +619,44 @@
         결과 복사
       </button>
     </footer>
+    <section class="duty-footer" aria-label="주간 청소 당번">
+      <div class="duty-top">
+        <div class="duty-title">
+          <strong>청소 당번</strong><span class="duty-period" id="dutyPeriod"></span>
+        </div>
+        <button class="duty-edit-toggle" id="dutyEditToggle" type="button" aria-expanded="false" aria-controls="dutyEditor">수정</button>
+      </div>
+      <div class="duty-schedule">
+        <div class="duty-week current">
+          <span class="duty-week-label">이번 주</span>
+          <span class="duty-person" id="dutyCurrent">박옥경 · 손성학</span>
+        </div>
+        <div class="duty-week">
+          <span class="duty-week-label">다음 주</span>
+          <span class="duty-person" id="dutyNext">손성화 · 우지현</span>
+        </div>
+      </div>
+      <div class="duty-editor" id="dutyEditor" hidden>
+        <p class="duty-editor-help">6개 조의 순서대로 매주 월요일 자동 변경됩니다. 이름은 <strong>이름 / 이름</strong> 형식으로 수정하세요.</p>
+        <div class="duty-team-fields">
+          <div class="duty-team-row"><label for="dutyTeam0">1조</label><input id="dutyTeam0" data-duty-team="0" type="text" maxlength="40" autocomplete="off" spellcheck="false"></div>
+          <div class="duty-team-row"><label for="dutyTeam1">2조</label><input id="dutyTeam1" data-duty-team="1" type="text" maxlength="40" autocomplete="off" spellcheck="false"></div>
+          <div class="duty-team-row"><label for="dutyTeam2">3조</label><input id="dutyTeam2" data-duty-team="2" type="text" maxlength="40" autocomplete="off" spellcheck="false"></div>
+          <div class="duty-team-row"><label for="dutyTeam3">4조</label><input id="dutyTeam3" data-duty-team="3" type="text" maxlength="40" autocomplete="off" spellcheck="false"></div>
+          <div class="duty-team-row"><label for="dutyTeam4">5조</label><input id="dutyTeam4" data-duty-team="4" type="text" maxlength="40" autocomplete="off" spellcheck="false"></div>
+          <div class="duty-team-row"><label for="dutyTeam5">6조</label><input id="dutyTeam5" data-duty-team="5" type="text" maxlength="40" autocomplete="off" spellcheck="false"></div>
+        </div>
+        <div class="duty-current-group">
+          <label for="dutyCurrentSelect">이번 주를 맡은 조</label>
+          <select id="dutyCurrentSelect" class="duty-current-select"></select>
+        </div>
+        <div class="duty-editor-actions">
+          <button type="button" id="dutyReset" class="duty-action secondary">기본값 복원</button>
+          <button type="button" id="dutySave" class="duty-action">저장</button>
+        </div>
+        <small class="duty-local-note">이 화면에서 수정한 명단은 현재 기기에만 저장됩니다. 전 직원에게 적용하려면 공통 명단을 업데이트해야 합니다.</small>
+      </div>
+    </section>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -771,6 +852,142 @@
       } catch (_) {}
 
       update();
+
+      // Six weekly cleaning crews, anchored to Monday 2026-11-09 in Korea.
+      // The second crew is on duty 2026-11-09 through 2026-11-15.
+      const dutyDefault = {
+        teams: [
+          ['정혜섭', '권정실'],
+          ['박옥경', '손성학'],
+          ['손성화', '우지현'],
+          ['이하준', '정미원'],
+          ['김성우', '정혜진'],
+          ['김광현', '김태흥']
+        ],
+        anchorMonday: '2026-11-09',
+        anchorIndex: 1
+      };
+      const dutyStorageKey = 'william-cleaning-rota-v1';
+      const dutyWeekTime = 7 * 24 * 60 * 60 * 1000;
+      const dutyKoreanFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit'
+      });
+      const dutyCurrentEl = document.getElementById('dutyCurrent');
+      const dutyNextEl = document.getElementById('dutyNext');
+      const dutyPeriodEl = document.getElementById('dutyPeriod');
+      const dutyEditor = document.getElementById('dutyEditor');
+      const dutyEditToggle = document.getElementById('dutyEditToggle');
+      const dutyTeamInputs = [...document.querySelectorAll('[data-duty-team]')];
+      const dutyCurrentSelect = document.getElementById('dutyCurrentSelect');
+      let dutyConfig = loadDutyConfig();
+      let dutyRenderedMonday = '';
+
+      function dutyMondaySeoul(date = new Date()) {
+        const parts = dutyKoreanFormatter.formatToParts(date);
+        const pick = type => Number(parts.find(part => part.type === type).value);
+        const day = new Date(Date.UTC(pick('year'), pick('month') - 1, pick('day')));
+        day.setUTCDate(day.getUTCDate() - ((day.getUTCDay() + 6) % 7));
+        return day.toISOString().slice(0, 10);
+      }
+      function dutyDateMs(ymd) { return Date.parse(ymd + 'T00:00:00Z'); }
+      function dutyTeamForWeek(monday, config = dutyConfig) {
+        const elapsed = Math.round((dutyDateMs(monday) - dutyDateMs(config.anchorMonday)) / dutyWeekTime);
+        return ((config.anchorIndex + elapsed) % config.teams.length + config.teams.length) % config.teams.length;
+      }
+      function loadDutyConfig() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(dutyStorageKey));
+          if (saved && Array.isArray(saved.teams) && saved.teams.length === 6 &&
+            saved.teams.every(team => Array.isArray(team) && team.length === 2 &&
+              team.every(name => typeof name === 'string' && name.trim().length > 0 && name.length <= 30)) &&
+            /^\d{4}-\d{2}-\d{2}$/.test(saved.anchorMonday) &&
+            Number.isInteger(saved.anchorIndex) && saved.anchorIndex >= 0 && saved.anchorIndex < 6) {
+            return saved;
+          }
+        } catch (_) {}
+        return JSON.parse(JSON.stringify(dutyDefault));
+      }
+      function dutyTeamText(team) { return team[0] + ' · ' + team[1]; }
+      function renderDuty(force = false) {
+        const monday = dutyMondaySeoul();
+        if (!force && monday === dutyRenderedMonday) return;
+        dutyRenderedMonday = monday;
+        const index = dutyTeamForWeek(monday);
+        dutyCurrentEl.textContent = dutyTeamText(dutyConfig.teams[index]);
+        dutyNextEl.textContent = dutyTeamText(dutyConfig.teams[(index + 1) % dutyConfig.teams.length]);
+        const sunday = new Date(dutyDateMs(monday) + 6 * 86400000);
+        const start = new Date(dutyDateMs(monday));
+        dutyPeriodEl.textContent = (start.getUTCMonth() + 1) + '.' + start.getUTCDate() +
+          '.–' + (sunday.getUTCMonth() + 1) + '.' + sunday.getUTCDate() + '.';
+      }
+      function populateDutyEditor() {
+        dutyTeamInputs.forEach((input, i) => {
+          input.value = dutyConfig.teams[i].join(' / ');
+        });
+        const monday = dutyMondaySeoul();
+        const current = dutyTeamForWeek(monday);
+        dutyCurrentSelect.replaceChildren();
+        dutyConfig.teams.forEach((team, i) => {
+          const option = document.createElement('option');
+          option.value = String(i);
+          option.textContent = (i + 1) + '조 · ' + dutyTeamText(team);
+          dutyCurrentSelect.appendChild(option);
+        });
+        dutyCurrentSelect.value = String(current);
+      }
+      dutyEditToggle.addEventListener('click', () => {
+        const open = dutyEditor.hidden;
+        dutyEditor.hidden = !open;
+        dutyEditToggle.setAttribute('aria-expanded', String(open));
+        dutyEditToggle.textContent = open ? '닫기' : '수정';
+        if (open) populateDutyEditor();
+      });
+      document.getElementById('dutySave').addEventListener('click', () => {
+        const teams = [];
+        for (const input of dutyTeamInputs) {
+          const parts = input.value.split(/\s*[\/／,，·]\s*/).map(part => part.trim());
+          if (parts.length !== 2 || parts.some(part => !part || part.length > 30)) {
+            inform('이름을 "첫 번째 / 두 번째" 형식으로 입력해 주세요.');
+            input.focus();
+            return;
+          }
+          teams.push(parts);
+        }
+        const anchorIndex = Number(dutyCurrentSelect.value);
+        if (!Number.isInteger(anchorIndex) || anchorIndex < 0 || anchorIndex >= teams.length) {
+          inform('이번 주 당번을 선택해 주세요.');
+          return;
+        }
+        const newConfig = { teams, anchorMonday: dutyMondaySeoul(), anchorIndex };
+        try {
+          localStorage.setItem(dutyStorageKey, JSON.stringify(newConfig));
+        } catch (_) {
+          inform('이 기기에 수정 내용을 저장할 수 없습니다.');
+          return;
+        }
+        dutyConfig = newConfig;
+        renderDuty(true);
+        dutyEditor.hidden = true;
+        dutyEditToggle.setAttribute('aria-expanded', 'false');
+        dutyEditToggle.textContent = '수정';
+        inform('이 기기의 청소 당번을 저장했어요.');
+      });
+      document.getElementById('dutyReset').addEventListener('click', () => {
+        try { localStorage.removeItem(dutyStorageKey); }
+        catch (_) { inform('이 기기의 설정을 복원할 수 없습니다.'); return; }
+        dutyConfig = JSON.parse(JSON.stringify(dutyDefault));
+        renderDuty(true);
+        populateDutyEditor();
+        inform('기본 청소 당번으로 복원했어요.');
+      });
+      renderDuty(true);
+      window.addEventListener('pageshow', () => renderDuty());
+      window.addEventListener('focus', () => renderDuty());
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) renderDuty();
+      });
+      // A displayed PWA can stay open across a Monday rollover.
+      setInterval(() => renderDuty(), 5 * 60 * 1000);
 
       // PWA: Keep the calculator usable offline after the first HTTPS visit.
       const secureHost = location.protocol === 'https:' ||
