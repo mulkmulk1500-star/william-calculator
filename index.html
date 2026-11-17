@@ -340,6 +340,16 @@
     .result-subvalue { display: inline-flex; align-items: baseline; gap: 4px; }
     .highlight .result-value { color: #1d62ba; }
     .highlight .result-value .unit { color: #5e80a9; }
+    /* Compact kg equivalent below the highlighted bag count (25 kg per bag). */
+    .mix-bag-total {
+      display: flex; flex-direction: column; align-items: flex-end;
+      justify-content: center; gap: 4px; flex: 0 1 auto; min-width: 0;
+    }
+    .mix-kg-equivalent {
+      color: #7794b8; font-size: 11px; font-weight: 700;
+      line-height: 1.1; white-space: nowrap; letter-spacing: -.01em;
+    }
+    .mix-kg-equivalent:empty { display: none; }
     .result-value.pop, .result-subvalue.pop {
       animation: pop .28s cubic-bezier(.2,1,.3,1);
     }
@@ -396,6 +406,7 @@
       display: flex;
       justify-content: flex-end;
     }
+    .foot[hidden] { display: none; }
     .copy {
       min-height: 38px;
       display: inline-flex;
@@ -586,8 +597,11 @@
               <span class="result-note" id="mixResultLabel">30% 배합</span>
             </span>
           </div>
-          <div class="result-value" id="bagFigure">
-            <strong id="resultBags">0</strong><span class="unit">포대</span>
+          <div class="mix-bag-total">
+            <div class="result-value" id="bagFigure">
+              <strong id="resultBags">0</strong><span class="unit">포대</span>
+            </div>
+            <span class="mix-kg-equivalent" id="mixKgEquivalent">= 0 kg</span>
           </div>
         </article>
       </div>
@@ -610,14 +624,10 @@
       </article>
     </section>
 
-    <footer class="foot">
+    <footer class="foot" id="installFoot" hidden>
       <button class="copy install" id="installBtn" type="button" hidden aria-label="홈 화면에 설치하기">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 16v4h16v-4"/></svg>
         앱 설치
-      </button>
-      <button class="copy" id="copyBtn" type="button" aria-label="계산 결과 복사">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
-        결과 복사
       </button>
     </footer>
     <section class="duty-footer" aria-label="주간 청소 당번">
@@ -671,10 +681,10 @@
       const presets = [...document.querySelectorAll('[data-preset]')];
       const mixButtons = [...document.querySelectorAll('[data-mix]')];
       const mixResultLabel = document.getElementById('mixResultLabel');
+      const mixKgEquivalent = document.getElementById('mixKgEquivalent');
       const batchThresholdNote = document.getElementById('batchThresholdNote');
       let mixPercent = 30;
       const clearBtn = document.getElementById('clearBtn');
-      const copyBtn = document.getElementById('copyBtn');
       const storageKey = 'william-prep-calculator-v3';
       const legacyKeys = ['william-prep-calculator-v2', 'mallang-calculator-kg-v1'];
       const outputs = {
@@ -696,7 +706,6 @@
         batchRemainderKg: document.getElementById('batchRemainderFigure')
       };
       const formatter = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 6 });
-      let current = null;
       let firstRender = true;
       let toastTimer;
 
@@ -727,7 +736,7 @@
         // the pipe's 10 kg residual must be added to the calculation.
         const batchKg = kg <= 300 ? ((bags - 1) * 25) + 10 : null;
         const batchRemainderKg = batchKg === null ? null : kg - batchKg;
-        return { bags, pallets, remainder, separatePallets, separateBags, batchKg, batchRemainderKg };
+        return { requiredKg, bags, pallets, remainder, separatePallets, separateBags, batchKg, batchRemainderKg };
       }
 
       function popFigure(el) {
@@ -739,7 +748,6 @@
 
       function update() {
         const kg = parseAmount(input.value);
-        current = kg;
         const invalid = kg === null && input.value.trim() !== '';
         error.classList.toggle('visible', invalid);
         input.setAttribute('aria-invalid', String(invalid));
@@ -750,6 +758,7 @@
         });
 
         const result = kg === null ? null : calculate(kg, mixPercent);
+        mixKgEquivalent.textContent = result ? `= ${formatNumber(result.requiredKg)} kg` : '';
         batchThresholdNote.textContent = kg !== null && kg > 300 ? '300kg 이하에서만 계산' : '';
         Object.keys(outputs).forEach((key) => {
           const next = result && result[key] !== null ? formatNumber(result[key]) : '—';
@@ -804,38 +813,6 @@
         if (value !== null) input.value = formatNumber(value);
       });
       input.addEventListener('focus', () => input.select());
-
-      copyBtn.addEventListener('click', async () => {
-        if (current === null) {
-          inform('먼저 생산량을 입력해 주세요.');
-          return;
-        }
-        const content = [
-          `생산량: ${formatNumber(current)} kg`,
-          `팔레트 구성: ${outputs.pallets.textContent} PL + ${outputs.remainder.textContent} 포대`,
-          `별도 준비량(배합 제외): ${outputs.separatePallets.textContent} PL + ${outputs.separateBags.textContent} 포대`,
-          `${mixPercent}% 배합 필요 포대: ${outputs.bags.textContent} 포대`
-        ].join('\n');
-
-        try {
-          if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(content);
-          } else {
-            const textarea = document.createElement('textarea');
-            textarea.value = content;
-            textarea.setAttribute('readonly', '');
-            textarea.style.cssText = 'position:fixed;left:-9999px;top:0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            const copied = document.execCommand('copy');
-            textarea.remove();
-            if (!copied) throw new Error('copy failed');
-          }
-          inform('계산 결과를 복사했어요.');
-        } catch (_) {
-          inform('이 환경에서는 복사가 제한돼요.');
-        }
-      });
 
       try {
         const saved = localStorage.getItem(storageKey);
@@ -1000,26 +977,30 @@
       }
 
       const installBtn = document.getElementById('installBtn');
+      const installFoot = document.getElementById('installFoot');
       const standalone = window.matchMedia('(display-mode: standalone)').matches ||
         window.navigator.standalone === true;
       let installPrompt = null;
       const isiOS = /iPad|iPhone|iPod/i.test(navigator.userAgent);
-      if (!standalone && isiOS && secureHost) installBtn.hidden = false;
+      if (!standalone && isiOS && secureHost) { installBtn.hidden = false; installFoot.hidden = false; }
       window.addEventListener('beforeinstallprompt', (event) => {
         event.preventDefault();
         if (standalone) return;
         installPrompt = event;
         installBtn.hidden = false;
+        installFoot.hidden = false;
       });
       window.addEventListener('appinstalled', () => {
         installPrompt = null;
         installBtn.hidden = true;
+        installFoot.hidden = true;
       });
       installBtn.addEventListener('click', async () => {
         if (installPrompt) {
           const event = installPrompt;
           installPrompt = null;
           installBtn.hidden = true;
+          installFoot.hidden = true;
           try { await event.prompt(); } catch (_) {}
         } else if (isiOS) {
           inform('Safari 공유 메뉴 → 홈 화면에 추가');
